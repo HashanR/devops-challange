@@ -24,7 +24,7 @@ resource "null_resource" "cp_ansible" {
       type        = "ssh"
       host        = aws_instance.bastion_server.public_ip
       user        = var.ssh_user
-      private_key = file(var.key_file)
+      private_key = file("${var.key_file}")
       insecure    = true
     }
   }
@@ -46,14 +46,15 @@ resource "null_resource" "ansible_run" {
     type        = "ssh"
     host        = aws_instance.bastion_server.public_ip
     user        = var.ssh_user
-    private_key = file(var.key_file)
+    private_key = file("${var.key_file}")
     insecure    = true
   }
 
   provisioner "remote-exec" {
     inline = [
       "echo 'ssh is up...'",
-      "sleep 360 && ansible-playbook -i /home/ubuntu/ansible/inventory /home/ubuntu/ansible/playbook.yml ",
+      "while [ ! -x /usr/bin/ansible-playbook ]; do sleep 10; done",
+      "sleep 120 && ansible-playbook -i /home/ubuntu/ansible/inventory /home/ubuntu/ansible/playbook.yml ",
     ]
   }
 }

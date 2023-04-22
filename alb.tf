@@ -13,8 +13,7 @@ module "alb" {
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnets
   security_groups = [aws_security_group.alb_sg.id]
-
-
+  
   target_groups = [
     {
       name_prefix      = "${var.name}-"

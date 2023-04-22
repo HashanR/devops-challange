@@ -1,14 +1,70 @@
 ---
-- name: Install and start Nginx
-  hosts: all
+- hosts: all
+  vars:
+    container_name: "nginx_container"
   become: true
   tasks:
-    - name: Install Nginx
+    - name: Install aptitude
       apt:
-        name: nginx
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
-    - name: Start Nginx service
-      service:
-        name: nginx
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Pull nginx image
+      docker_image:
+        name: nginx:latest
+
+
+    - name: Generate index.html from template
+      template:
+        src: index.html.j2
+        dest: /tmp/index.html
+
+
+    - name: Create nginx container
+      docker_container:
+        name: "{{ container_name }}"
+        image: nginx:latest
+        ports:
+          - "80:80"
+        volumes:
+          - "/var/log/nginx:/var/log/nginx"
+          - "/tmp/index.html:/usr/share/nginx/html/index.html"
+    
+    - name: Start nginx container
+      docker_container:
+        name: "{{ container_name }}"
         state: started

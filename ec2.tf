@@ -8,6 +8,7 @@ resource "aws_instance" "bastion_server" {
   security_groups = [aws_security_group.bastion_server_sg.id]
   key_name        = var.public_key_name
 
+
   user_data = <<-EOF
               #!/bin/bash
               echo "${file(var.key_file)}" > /home/ubuntu/.ssh/id_rsa
@@ -17,6 +18,14 @@ resource "aws_instance" "bastion_server" {
               sudo apt-get update -y
               sudo apt-get install ansible -y
               EOF
+
+    depends_on = [
+       
+      local_file.local_key,
+      aws_key_pair.key_pair
+
+
+    ]
 
   tags = {
     Name        = "${var.name}-bastion-server"
@@ -64,6 +73,9 @@ resource "aws_instance" "web_server" {
   security_groups = [aws_security_group.web_servers_sg.id]
   key_name        = var.public_key_name
 
+  depends_on = [
+      local_file.local_key
+    ]
 
   tags = {
     Name        = format("${var.name}-web-server-%02d", count.index + 1)
@@ -111,8 +123,6 @@ resource "aws_security_group" "web_servers_sg" {
 resource "aws_key_pair" "key_pair" {
   key_name   = var.public_key_name
   public_key = tls_private_key.rsa.public_key_openssh
-
-
 }
 
 resource "tls_private_key" "rsa" {

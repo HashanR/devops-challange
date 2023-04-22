@@ -3,8 +3,7 @@
 
 #Ansible inventory file
 ansible/inventory
-#ssh key
-*-key
+
 
 # .tfstate files
 *.tfstate
