@@ -1,14 +1,17 @@
 variable "region" {
+  type = string  
   description = "AWS region where the create resources"
   default     = "us-east-1"
 }
 
 variable "name" {
+  type = string  
   description = "Org name"
   default     = "hub88"
 }
 
 variable "owner" {
+  type = string
   description = "Name of the owner"
   default     = "hashanr"
 }
@@ -68,11 +71,9 @@ variable "public_key_name" {
 }
 
 variable "key_file" {
-
     type =  string
     description = "NName of the key file"
     default = "hub88-key"
-  
 }
 
 variable "ssh_user" {

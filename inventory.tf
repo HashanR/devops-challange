@@ -54,7 +54,7 @@ resource "null_resource" "ansible_run" {
     inline = [
       "echo 'ssh is up...'",
       "while [ ! -x /usr/bin/ansible-playbook ]; do sleep 10; done",
-      "sleep 120 && ansible-playbook -i /home/ubuntu/ansible/inventory /home/ubuntu/ansible/playbook.yml ",
+      "ansible-playbook -i /home/ubuntu/ansible/inventory /home/ubuntu/ansible/playbook.yml ",
     ]
   }
 }

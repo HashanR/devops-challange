@@ -13,6 +13,7 @@ module "vpc" {
   private_subnets = var.private_subnets
   public_subnets  = var.public_subnets
 
+  # Enable creation of a NAT Gateway and ensure only a single NAT Gateway is created
   enable_nat_gateway = true
   single_nat_gateway = true
 

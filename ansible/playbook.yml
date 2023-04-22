@@ -2,6 +2,8 @@
 - hosts: all
   vars:
     container_name: "nginx_container"
+    awslogs_region: "us-east-1"
+    awslogs_group: "hub88_log_group"
   become: true
   tasks:
     - name: Install aptitude
@@ -39,6 +41,24 @@
         state: latest
         update_cache: true
 
+    - name: Copy daemon.json file
+      copy:
+        content: |
+          {
+            "log-driver": "awslogs",
+            "log-opts": {
+              "awslogs-region": "{{ awslogs_region }}",
+              "awslogs-group": "{{ awslogs_group }}",
+              "awslogs-stream": "{{ inventory_hostname }}"
+            }
+          }
+        dest: /etc/docker/daemon.json
+
+    - name: Restart Docker service
+      systemd:
+        name: docker
+        state: restarted
+
     - name: Install Docker Module for Python
       pip:
         name: docker
@@ -47,12 +67,10 @@
       docker_image:
         name: nginx:latest
 
-
     - name: Generate index.html from template
       template:
         src: index.html.j2
         dest: /tmp/index.html
-
 
     - name: Create nginx container
       docker_container:
@@ -63,7 +81,7 @@
         volumes:
           - "/var/log/nginx:/var/log/nginx"
           - "/tmp/index.html:/usr/share/nginx/html/index.html"
-    
+
     - name: Start nginx container
       docker_container:
         name: "{{ container_name }}"

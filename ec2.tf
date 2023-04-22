@@ -7,8 +7,8 @@ resource "aws_instance" "bastion_server" {
   subnet_id       = module.vpc.public_subnets[2]
   security_groups = [aws_security_group.bastion_server_sg.id]
   key_name        = var.public_key_name
-
-
+  
+  # Use user_data to bootstrap the EC2 instance with SSH key and Ansible
   user_data = <<-EOF
               #!/bin/bash
               echo "${file(var.key_file)}" > /home/ubuntu/.ssh/id_rsa
@@ -19,13 +19,9 @@ resource "aws_instance" "bastion_server" {
               sudo apt-get install ansible -y
               EOF
 
-    depends_on = [
-       
-      local_file.local_key,
-      aws_key_pair.key_pair
-
-
-    ]
+  depends_on = [
+    local_file.local_key
+  ]
 
   tags = {
     Name        = "${var.name}-bastion-server"
@@ -72,10 +68,11 @@ resource "aws_instance" "web_server" {
   subnet_id       = module.vpc.private_subnets[count.index]
   security_groups = [aws_security_group.web_servers_sg.id]
   key_name        = var.public_key_name
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   depends_on = [
-      local_file.local_key
-    ]
+    local_file.local_key
+  ]
 
   tags = {
     Name        = format("${var.name}-web-server-%02d", count.index + 1)
