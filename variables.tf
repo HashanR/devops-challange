@@ -4,6 +4,43 @@ variable "region" {
 }
 
 variable "name" {
-  description = "Name to use as a prefix for resource names"
+  description = "Org name"
   default     = "hub88"
+}
+
+variable "owner" {
+  description = "Name of the owner"
+  default     = "HashanR"
+}
+
+variable "vpc_cidr" {
+  type        = string
+  description = "CIDR block for the VPC"
+  default = "10.161.0.0/24"
+}
+
+variable "private_subnets" {
+  type        = list(string)
+  description = "CIDR blocks for the private subnets"
+  default = [
+  "10.161.0.0/27",
+  "10.161.0.32/27",
+  "10.161.0.64/27"
+   ]
+}
+
+variable "public_subnets" {
+  type        = list(string)
+  description = "CIDR blocks for the public subnets"
+  default = [
+  "10.161.0.128/27",
+  "10.161.0.160/27",
+  "10.161.0.192/27"
+   ]
+}
+
+variable "environment" {
+  type        = string
+  description = "Environment name"
+  default = "development"
 }
