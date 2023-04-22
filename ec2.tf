@@ -6,10 +6,10 @@ resource "aws_instance" "bastion-server" {
   instance_type   = var.instance_type
   subnet_id       = module.vpc.public_subnets[2]
   security_groups = [aws_security_group.bastion-server-sg.id]
-  key_name = var.public_key_name
+  key_name        = var.public_key_name
 
   tags = {
-    Name        = "${var.name}-bastion_server"
+    Name        = "${var.name}-bastion-server"
     Terraform   = var.created_by_terraform
     Environment = var.environment
     Owner       = var.owner
@@ -52,9 +52,19 @@ resource "aws_instance" "web-server" {
   instance_type   = var.instance_type
   subnet_id       = module.vpc.private_subnets[count.index]
   security_groups = [aws_security_group.web-servers-sg.id]
-  key_name = var.public_key_name
+  key_name        = var.public_key_name
+
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y nginx
+              systemctl start nginx
+              systemctl enable nginx
+              echo "<html><body><h1>Hello from $(hostname)</h1></body></html>" > /var/www/html/index.html
+              EOF
+
   tags = {
-    Name = format("${var.name}-web-server-%02d", count.index + 1)
+    Name        = format("${var.name}-web-server-%02d", count.index + 1)
     Terraform   = var.created_by_terraform
     Environment = var.environment
     Owner       = var.owner
@@ -71,6 +81,13 @@ resource "aws_security_group" "web-servers-sg" {
     to_port         = 22
     protocol        = "tcp"
     security_groups = [aws_security_group.bastion-server-sg.id]
+  }
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb-sg.id]
   }
 
   egress {
@@ -102,7 +119,7 @@ resource "tls_private_key" "rsa" {
 }
 
 resource "local_file" "local-key" {
-    content  = tls_private_key.rsa.private_key_pem
-    filename =  var.key_file
+  content  = tls_private_key.rsa.private_key_pem
+  filename = var.key_file
 }
 
