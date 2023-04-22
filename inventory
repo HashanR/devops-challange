@@ -1,8 +1,0 @@
-[all:vars]
-ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-
-[webnodes]
-hub88-web-server-01 ansible_user=ubuntu ansible_host=10.161.0.4
-hub88-web-server-02 ansible_user=ubuntu ansible_host=10.161.0.62
-hub88-web-server-03 ansible_user=ubuntu ansible_host=10.161.0.93
-
