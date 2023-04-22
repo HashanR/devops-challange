@@ -5,7 +5,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.6.0"
 
-  name = "${var.name}-vpc"
+  name = "${var.name}"
   cidr = var.vpc_cidr
 
   azs = ["${var.region}a", "${var.region}b", "${var.region}c"]
@@ -22,6 +22,8 @@ module "vpc" {
     Owner       = var.owner
   }
 }
+
+
 
 
 

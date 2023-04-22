@@ -57,3 +57,20 @@ variable "created_by_terraform" {
   description = "Infrastructure creation method"
   default = true
 }
+
+variable "public_key_name" {
+
+    type = string
+    description = "Name of the public key"
+    default = "hub88-key"
+
+  
+}
+
+variable "key_file" {
+
+    type =  string
+    description = "NName of the key file"
+    default = "hub88-key"
+  
+}

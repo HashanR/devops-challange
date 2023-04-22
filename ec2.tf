@@ -6,6 +6,7 @@ resource "aws_instance" "bastion-server" {
   instance_type   = var.instance_type
   subnet_id       = module.vpc.public_subnets[2]
   security_groups = [aws_security_group.bastion-server-sg.id]
+  key_name = var.public_key_name
 
   tags = {
     Name        = "${var.name}-bastion_server"
@@ -46,12 +47,12 @@ resource "aws_security_group" "bastion-server-sg" {
 #                      Web Server                          #
 ############################################################
 resource "aws_instance" "web-server" {
+  count           = length(module.vpc.private_subnets)
   ami             = data.aws_ami.ubuntu.id
   instance_type   = var.instance_type
-  count           = length(module.vpc.private_subnets)
   subnet_id       = module.vpc.private_subnets[count.index]
   security_groups = [aws_security_group.web-servers-sg.id]
-
+  key_name = var.public_key_name
   tags = {
     Name = format("${var.name}-web-server-%02d", count.index + 1)
     Terraform   = var.created_by_terraform
@@ -85,3 +86,23 @@ resource "aws_security_group" "web-servers-sg" {
     Owner       = var.owner
   }
 }
+############################################################
+#                      SSH Key Pair                        #
+############################################################
+resource "aws_key_pair" "key-pair" {
+  key_name   = var.public_key_name
+  public_key = tls_private_key.rsa.public_key_openssh
+
+
+}
+
+resource "tls_private_key" "rsa" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "local-key" {
+    content  = tls_private_key.rsa.private_key_pem
+    filename =  var.key_file
+}
+
