@@ -1,11 +1,11 @@
 ############################################################
 #                      Bation Server                       #
 ############################################################
-resource "aws_instance" "bastion-server" {
+resource "aws_instance" "bastion_server" {
   ami             = data.aws_ami.ubuntu.id
   instance_type   = var.instance_type
   subnet_id       = module.vpc.public_subnets[2]
-  security_groups = [aws_security_group.bastion-server-sg.id]
+  security_groups = [aws_security_group.bastion_server_sg.id]
   key_name        = var.public_key_name
 
   user_data = <<-EOF
@@ -27,7 +27,7 @@ resource "aws_instance" "bastion-server" {
 
 }
 
-resource "aws_security_group" "bastion-server-sg" {
+resource "aws_security_group" "bastion_server_sg" {
   name_prefix = "${var.name}-bastion-server-sg-"
   vpc_id      = module.vpc.vpc_id
 
@@ -56,12 +56,12 @@ resource "aws_security_group" "bastion-server-sg" {
 ############################################################
 #                      Web Server                          #
 ############################################################
-resource "aws_instance" "web-server" {
+resource "aws_instance" "web_server" {
   count           = length(module.vpc.private_subnets)
   ami             = data.aws_ami.ubuntu.id
   instance_type   = var.instance_type
   subnet_id       = module.vpc.private_subnets[count.index]
-  security_groups = [aws_security_group.web-servers-sg.id]
+  security_groups = [aws_security_group.web_servers_sg.id]
   key_name        = var.public_key_name
 
 
@@ -74,7 +74,7 @@ resource "aws_instance" "web-server" {
 
 }
 
-resource "aws_security_group" "web-servers-sg" {
+resource "aws_security_group" "web_servers_sg" {
   name_prefix = "${var.name}-web-servers-sg-"
   vpc_id      = module.vpc.vpc_id
 
@@ -82,14 +82,14 @@ resource "aws_security_group" "web-servers-sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.bastion-server-sg.id]
+    security_groups = [aws_security_group.bastion_server_sg.id]
   }
 
   ingress {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb-sg.id]
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -108,7 +108,7 @@ resource "aws_security_group" "web-servers-sg" {
 ############################################################
 #                      SSH Key Pair                        #
 ############################################################
-resource "aws_key_pair" "key-pair" {
+resource "aws_key_pair" "key_pair" {
   key_name   = var.public_key_name
   public_key = tls_private_key.rsa.public_key_openssh
 
@@ -120,7 +120,7 @@ resource "tls_private_key" "rsa" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "local-key" {
+resource "local_file" "local_key" {
   content  = tls_private_key.rsa.private_key_pem
   filename = var.key_file
 }

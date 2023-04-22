@@ -12,7 +12,7 @@ module "alb" {
 
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnets
-  security_groups = [aws_security_group.alb-sg.id]
+  security_groups = [aws_security_group.alb_sg.id]
 
 
   target_groups = [
@@ -23,17 +23,17 @@ module "alb" {
       target_type      = "instance"
       targets = {
         web-server-1 = {
-          target_id = aws_instance.web-server.*.id[0]
+          target_id = aws_instance.web_server.*.id[0]
           port      = 80
         }
 
         web-server-2 = {
-          target_id = aws_instance.web-server.*.id[1]
+          target_id = aws_instance.web_server.*.id[1]
           port      = 80
         }
 
         web-server-3 = {
-          target_id = aws_instance.web-server.*.id[2]
+          target_id = aws_instance.web_server.*.id[2]
           port      = 80
         }
 
@@ -61,7 +61,7 @@ module "alb" {
 
 
 
-resource "aws_security_group" "alb-sg" {
+resource "aws_security_group" "alb_sg" {
   name_prefix = "${var.name}-alb-sg-"
   vpc_id      = module.vpc.vpc_id
 

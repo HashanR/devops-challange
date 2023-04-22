@@ -9,7 +9,7 @@ resource "local_file" "ansible_inventory" {
 
 resource "null_resource" "cp_ansible" {
   depends_on = [
-    aws_instance.bastion-server
+    aws_instance.bastion_server
   ]
 
   triggers = {
@@ -22,7 +22,7 @@ resource "null_resource" "cp_ansible" {
 
     connection {
       type        = "ssh"
-      host        = aws_instance.bastion-server.public_ip
+      host        = aws_instance.bastion_server.public_ip
       user        = var.ssh_user
       private_key = file(var.key_file)
       insecure    = true
@@ -30,12 +30,11 @@ resource "null_resource" "cp_ansible" {
   }
 }
 
-
 resource "null_resource" "ansible_run" {
   depends_on = [
     null_resource.cp_ansible,
-    aws_instance.web-server,
-    aws_instance.bastion-server,
+    aws_instance.web_server,
+    aws_instance.bastion_server,
   ]
 
     
@@ -45,7 +44,7 @@ resource "null_resource" "ansible_run" {
 
   connection {
     type        = "ssh"
-    host        = aws_instance.bastion-server.public_ip
+    host        = aws_instance.bastion_server.public_ip
     user        = var.ssh_user
     private_key = file(var.key_file)
     insecure    = true

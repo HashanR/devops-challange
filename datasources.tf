@@ -18,12 +18,12 @@ data "aws_ami" "ubuntu" {
 data "template_file" "ansible_web_hosts" {
   count           = length(module.vpc.private_subnets)
   template   = file("${path.root}/templates/ansible_hosts.tpl")
-  depends_on = [aws_instance.web-server]
+  depends_on = [aws_instance.web_server]
 
   vars = {
-    node_name    = aws_instance.web-server.*.tags[count.index]["Name"]
+    node_name    = aws_instance.web_server.*.tags[count.index]["Name"]
     ansible_user = var.ssh_user
-    ip           = element(aws_instance.web-server.*.private_ip, count.index)
+    ip           = element(aws_instance.web_server.*.private_ip, count.index)
   }
 }
 
