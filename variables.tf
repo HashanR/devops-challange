@@ -74,3 +74,9 @@ variable "key_file" {
     default = "hub88-key"
   
 }
+
+variable "ssh_user" {
+    type = string
+    description = "Username that need to log into ubuntu instances"
+    default = "ubuntu"
+}
