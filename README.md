@@ -56,7 +56,7 @@ https://docs.docker.com/config/containers/logging/awslogs/
 
 ### Live Web Application Link 
 
-[hub88-alb-1690307212.us-east-1.elb.amazonaws.com](hub88-alb-1690307212.us-east-1.elb.amazonaws.com)
+[hub88-alb-1690307212.us-east-1.elb.amazonaws.com](http://hub88-alb-1690307212.us-east-1.elb.amazonaws.com)
 
 
 
