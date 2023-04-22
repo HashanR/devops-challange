@@ -5,7 +5,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.6.0"
 
-  name = var.name
+  name = "${var.name}-vpc"
   cidr = var.vpc_cidr
 
   azs = ["${var.region}a", "${var.region}b", "${var.region}c"]
@@ -17,8 +17,11 @@ module "vpc" {
   single_nat_gateway = true
 
   tags = {
-    Terraform   = "true"
+    Terraform   = var.created_by_terraform
     Environment = var.environment
     Owner       = var.owner
   }
 }
+
+
+

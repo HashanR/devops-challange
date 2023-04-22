@@ -10,7 +10,7 @@ variable "name" {
 
 variable "owner" {
   description = "Name of the owner"
-  default     = "HashanR"
+  default     = "hashanr"
 }
 
 variable "vpc_cidr" {
@@ -43,4 +43,17 @@ variable "environment" {
   type        = string
   description = "Environment name"
   default = "development"
+}
+
+variable "instance_type" {
+    type = string
+    description = "Type of the EC2 instances"
+    default = "t2.micro"
+  
+}
+
+variable "created_by_terraform" {
+  type = bool
+  description = "Infrastructure creation method"
+  default = true
 }
