@@ -8,6 +8,16 @@ resource "aws_instance" "bastion-server" {
   security_groups = [aws_security_group.bastion-server-sg.id]
   key_name        = var.public_key_name
 
+  user_data = <<-EOF
+              #!/bin/bash
+              echo "${file(var.key_file)}" > /home/ubuntu/.ssh/id_rsa
+              chown ubuntu /home/ubuntu/.ssh/id_rsa
+              chgrp ubuntu /home/ubuntu/.ssh/id_rsa
+              chmod 600 /home/ubuntu/.ssh/id_rsa
+              sudo apt-get update -y
+              sudo apt-get install ansible -y
+              EOF
+
   tags = {
     Name        = "${var.name}-bastion-server"
     Terraform   = var.created_by_terraform
@@ -54,14 +64,6 @@ resource "aws_instance" "web-server" {
   security_groups = [aws_security_group.web-servers-sg.id]
   key_name        = var.public_key_name
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update -y
-              apt-get install -y nginx
-              systemctl start nginx
-              systemctl enable nginx
-              echo "<html><body><h1>Hello from $(hostname)</h1></body></html>" > /var/www/html/index.html
-              EOF
 
   tags = {
     Name        = format("${var.name}-web-server-%02d", count.index + 1)
