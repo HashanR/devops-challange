@@ -1,0 +1,88 @@
+---
+- hosts: all
+  vars:
+    container_name: "nginx_container"
+    awslogs_region: "us-east-1"
+    awslogs_group: "hub88_log_group"
+  become: true
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Copy daemon.json file
+      copy:
+        content: |
+          {
+            "log-driver": "awslogs",
+            "log-opts": {
+              "awslogs-region": "{{ awslogs_region }}",
+              "awslogs-group": "{{ awslogs_group }}",
+              "awslogs-stream": "{{ inventory_hostname }}"
+            }
+          }
+        dest: /etc/docker/daemon.json
+
+    - name: Restart Docker service
+      systemd:
+        name: docker
+        state: restarted
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Pull nginx image
+      docker_image:
+        name: nginx:latest
+
+    - name: Generate index.html from template
+      template:
+        src: index.html.j2
+        dest: /tmp/index.html
+
+    - name: Create nginx container
+      docker_container:
+        name: "{{ container_name }}"
+        image: nginx:latest
+        ports:
+          - "80:80"
+        volumes:
+          - "/var/log/nginx:/var/log/nginx"
+          - "/tmp/index.html:/usr/share/nginx/html/index.html"
+
+    - name: Start nginx container
+      docker_container:
+        name: "{{ container_name }}"
+        state: started
