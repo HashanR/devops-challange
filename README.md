@@ -18,7 +18,7 @@ I have created relevent IAM polices and roles to integrate web servers Docker da
 
 ## Architecture Diagram 
 
-![Architecture Diagram.](https://i.ibb.co/YcncT52/infrastructure-diagram.png)
+ ![Architecture Diagram.](https://i.ibb.co/YcncT52/infrastructure-diagram.png)
 
 ### Setup Instructions
 
@@ -27,13 +27,13 @@ I have created relevent IAM polices and roles to integrate web servers Docker da
 * Run ```terraform plan``` to see what are the resources will be created
 * Run ```terraform apply -auto-approve``` to apply changes into cloud
 
-#### Destroy Project
+#### Destroy Instructions
 
 * To destroy resources run ```terraform destroy``` and it will ask confirmation and you can type ```yes``` and hit enter
 
 #### Known isses or limitations
 
-* There is an issue in AWS provider sometimes it stop while creating the resources due to bug in the provider and if you face same issue please re-apply.
+* There is a bug in AWS provider sometimes it stop while creating the resources and if you face same issue please re-apply.
 
   ![Architecture Diagram.](https://i.ibb.co/Pmc1GZm/Screenshot-from-2023-04-22-18-56-07.png)
 
