@@ -1,6 +1,6 @@
 # DevOps-Challange
 
-#### prerequisites 
+### Version Requirment 
 
 | Technology | Version Required |
 |------------|-----------------|
