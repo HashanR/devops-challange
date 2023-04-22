@@ -42,6 +42,9 @@ I have created relevent IAM polices and roles to integrate web servers Docker da
   ![Architecture Diagram.](https://i.ibb.co/j6fHGnQ/Screencast-from-2023-04-22-20-12-08.gif)
 
 
+* Do Not Delete the ```hub88-key``` file it should be there with or without content. if it deleted by ```terraform destroy``` please create empty file in root of the project before apply again.
+
+
 #### Sources
 
 ```
